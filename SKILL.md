@@ -1,11 +1,12 @@
 ---
 name: kinema-skill-making-pipeline
+displayName: Kinema's Skill Making Pipeline
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
 ---
 
-# Kinema Skill Development & Publishing Specification
+# Kinema's Skill Making Pipeline | Kinema Skill 开发与发布规范
 
 本规范定义了 KinemaClaw ecosystem 中 skill 的开发、版本管理、发布的标准化流程。 |
 
