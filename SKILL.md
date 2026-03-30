@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.2.1
+version: 1.2.2
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -21,6 +21,7 @@ description: |
 3. **Versioned Releases** - Must create Git tag before publishing | 发布前必须打 Git tag
 4. **No In-Place Publishing** - Never publish raw skills from /app/skills/ | 禁止发布 /app/skills/ 中的原位 skill
 5. **Onboarding Required** - Every skill must have installation/configuration guide | 每个 skill 必须有安装/配置引导
+6. **Four-Way Sync** - After release, sync versions across: projects repo, local skills, GitHub Release, ClawHub | 发版后同步四地版本：projects 仓库、本地 skills、GitHub Release、ClawHub
 
 ## Development Workflow | 开发流程
 
@@ -121,6 +122,38 @@ fetch('https://clawhub.ai/api/v1/skills', {
 - `--version` 必须与 Git tag 版本号一致
 - `--changelog` 必须包含本次变更说明
 - 发布前确保 GitHub Release 已创建
+
+### 4. Four-Way Version Sync | 四地版本同步
+
+完成发版后，必须确保以下四个位置的版本一致：
+
+| Location | Path/URL | Action |
+|----------|----------|--------|
+| **projects 仓库** | `~/.openclaw/workspace/projects/<skill-name>/` | Git tag + SKILL.md version |
+| **本地 skills** | `~/.openclaw/workspace/skills/<skill-name>/` | `clawhub update` 或手动同步 |
+| **GitHub Release** | `https://github.com/<org>/<repo>/releases` | `gh release create` |
+| **ClawHub** | `https://clawhub.ai` | `clawhub publish` |
+
+**发版后自动同步本地 skills**:
+
+```bash
+# 发版完成后，更新本地安装的 skill
+clawhub update <skill-name>
+
+# 或手动同步
+cp projects/<skill-name>/SKILL.md skills/<skill-name>/SKILL.md
+cp -r projects/<skill-name>/scripts skills/<skill-name>/scripts/
+```
+
+**完整发版检查清单**:
+
+- [ ] 1. projects 仓库 SKILL.md 版本号已更新
+- [ ] 2. Git commit 并打 tag (vX.Y.Z)
+- [ ] 3. Push 到 GitHub (`git push origin master --tags`)
+- [ ] 4. 创建 GitHub Release (`gh release create vX.Y.Z`)
+- [ ] 5. 发布到 ClawHub (`clawhub publish` 或 API fallback)
+- [ ] 6. 更新本地 skills (`clawhub update <skill-name>` 或手动同步)
+- [ ] 7. 验证四地版本一致
 
 ### Version Numbering | 版本号规则
 
