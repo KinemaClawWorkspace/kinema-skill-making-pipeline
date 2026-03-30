@@ -1,5 +1,8 @@
 # Kinema's Skill Making Pipeline
 
+> **ClawHub**: https://clawhub.ai/leeshunee/kinema-skill-making-pipeline | `clawhub install kinema-skill-making-pipeline`
+
+
 > OpenClaw Skill 开发与发布规范 | OpenClaw Skill Development & Publishing Specification
 
 ## 概述 | Overview
