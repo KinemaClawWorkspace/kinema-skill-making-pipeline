@@ -67,8 +67,14 @@ git push origin v1.2.0
 # Settings → Releases → Create new release
 
 # 5. Publish to ClawHub | 推送到 ClawHub
-clawhub publish . --slug <skill-name> --version 1.2.0
+clawhub publish . --slug <skill-name> --name "<displayName>" --version 1.2.0 --changelog "description of changes"
 ```
+
+**ClawHub 发版要求**:
+- `--name` 必须使用 SKILL.md 中的 `displayName` 值
+- `--version` 必须与 Git tag 版本号一致
+- `--changelog` 必须包含本次变更说明
+- 发布前确保 GitHub Release 已创建
 
 ### Version Numbering | 版本号规则
 
@@ -92,8 +98,19 @@ Each skill must include: | 每个 skill 必须包含：
 
 Must include: | 包含：
 - name: skill name | skill 名称
+- displayName: human-readable name with feature description | 人类可读名称（含功能描述）
+- version: semantic version number | 语义化版本号
 - description: functionality description and trigger condition | 功能描述和触发条件
+- Author link: \`[LeeShunEE](https://github.com/LeeShunEE)\`
+- Organization link: \`[KinemaClawWorkspace](https://github.com/KinemaClawWorkspace)\`
 - Complete usage instructions | 完整使用说明
+
+**displayName 格式规范**:
+- 统一格式: \`Name (Feature Description)\`
+- 示例: \`AList-CLI (Cloud Storage CLI for AList, with OpenClaw Skill)\`
+- 示例: \`Kinema's Concept Re-Search\`
+- 示例: \`Kinema's Skill Making Pipeline\`
+- 示例: \`SearXNG Search CLI (Free, Self-hosted, Auto-deploy, Multi-Channel)\`
 
 ### 2. Onboarding | Onboarding
 
