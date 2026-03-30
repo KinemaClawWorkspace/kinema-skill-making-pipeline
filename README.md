@@ -116,3 +116,7 @@ Skill 中**禁止**包含：
 ## 许可证 | License
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+## 组织 | Organization
+
+[KinemaClawWorkspace](https://github.com/KinemaClawWorkspace) — Building AI-powered OpenClaw Skills for the community.
