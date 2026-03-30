@@ -91,7 +91,7 @@ clawhub publish . --slug <skill-name> --name "<displayName>" --version 1.2.0 --c
 ## 目录结构 | Directory Structure
 
 ```
-projects/<skill-name>/
+<skill-name>/
 ├── SKILL.md              # 必需: Skill 定义
 ├── README.md             # 推荐: 仓库说明
 ├── LICENSE               # 推荐: 开源协议
@@ -112,14 +112,6 @@ Skill 中**禁止**包含：
 - 默认创建 **Private** 仓库
 - 使用有意义的仓库名称
 - 保持 README.md 与 SKILL.md 同步
-
-## 技能列表 | Skills
-
-| Skill | Description |
-|-------|-------------|
-| [alist-cli](https://github.com/KinemaClawWorkspace/alist-cli) | AList 文件管理 API |
-| [searxng-search-cli](https://github.com/KinemaClawWorkspace/searxng-search-cli) | 自托管 SearXNG 搜索引擎 |
-| [kinema-concept-research](https://github.com/KinemaClawWorkspace/kinema-concept-research) | 概念现状调研 |
 
 ## 许可证 | License
 

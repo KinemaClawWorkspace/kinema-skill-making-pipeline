@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.0.0
+version: 1.0.3
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -12,7 +12,7 @@ description: |
 - **Author**: [LeeShunEE](https://github.com/LeeShunEE)
 - **Organization**: [KinemaClawWorkspace](https://github.com/KinemaClawWorkspace)
 
-本规范定义了 KinemaClaw ecosystem 中 skill 的开发、版本管理、发布的标准化流程。 |
+本规范定义了 KinemaClaw ecosystem 中 skill 的开发、版本管理、发布的标准化流程。
 
 ## Core Principles | 核心原则
 
@@ -101,16 +101,12 @@ Must include: | 包含：
 - displayName: human-readable name with feature description | 人类可读名称（含功能描述）
 - version: semantic version number | 语义化版本号
 - description: functionality description and trigger condition | 功能描述和触发条件
-- Author link: \`[LeeShunEE](https://github.com/LeeShunEE)\`
-- Organization link: \`[KinemaClawWorkspace](https://github.com/KinemaClawWorkspace)\`
+- Author link: \`[YourName](https://github.com/yourname)\`
+- Organization link: \`[YourOrg](https://github.com/yourorg)\`
 - Complete usage instructions | 完整使用说明
 
 **displayName 格式规范**:
 - 统一格式: \`Name (Feature Description)\`
-- 示例: \`AList-CLI (Cloud Storage CLI for AList, with OpenClaw Skill)\`
-- 示例: \`Kinema's Concept Re-Search\`
-- 示例: \`Kinema's Skill Making Pipeline\`
-- 示例: \`SearXNG Search CLI (Free, Self-hosted, Auto-deploy, Multi-Channel)\`
 
 ### 2. Onboarding | Onboarding
 
@@ -141,16 +137,12 @@ Skills must NOT contain: | skill 中**禁止**包含：
 ## Directory Structure | 目录结构
 
 ```
-projects/
-├── alist-cli/           # Git repository | Git 仓库
-│   ├── SKILL.md
-│   ├── scripts/
-│   └── README.md
-├── searxng-search/      # Git repository | Git 仓库
-│   ├── SKILL.md
-│   └── scripts/
-└── concept-research/   # Git repository | Git 仓库
-    └── SKILL.md
+<skill-name>/               # Git repository | Git 仓库
+├── SKILL.md                # Required: skill definition | 必需
+├── README.md               # Recommended: project readme | 推荐
+├── LICENSE                 # Recommended: license | 推荐
+├── scripts/                # Optional: automation scripts | 可选
+└── references/             # Optional: reference materials | 可选
 ```
 
 ## Automation Script Example | 自动化脚本示例
