@@ -67,7 +67,57 @@ git push origin v1.2.0
 # Settings → Releases → Create new release
 
 # 5. Publish to ClawHub | 推送到 ClawHub
+
+## 方式 A: ClawHub CLI（推荐）
 clawhub publish . --slug <skill-name> --name "<displayName>" --version 1.2.0 --changelog "description of changes"
+```
+
+## 方式 B: 直接调用 API（CLI 502 时备用）
+
+> 当 `clawhub publish` 返回 502 错误时，可能是 CLI 与后端的兼容问题。
+> 此时可通过 Node.js 直接调用 ClawHub API 发布：
+
+```bash
+node -e "
+const fs = require('fs');
+const path = require('path');
+const TOKEN = JSON.parse(fs.readFileSync(process.env.HOME + '/.config/clawhub/config.json','utf8')).token;
+
+const folder = '/path/to/<skill-name>';
+const files = [];
+function walk(dir, prefix='') {
+  for (const f of fs.readdirSync(dir, {withFileTypes: true})) {
+    const full = path.join(dir, f.name);
+    const rel = prefix ? prefix + '/' + f.name : f.name;
+    if (f.name === '.git' || f.name === 'node_modules') continue;
+    if (f.isDirectory()) walk(full, rel);
+    else if (rel.split('.').pop().match(/^(md|json|yaml|yml|js|ts|py|sh|txt|toml|css|html|svg|xml|csv|env|ini|cfg)$/)) {
+      files.push({ relPath: rel, bytes: fs.readFileSync(full) });
+    }
+  }
+}
+walk(folder);
+
+const form = new FormData();
+form.set('payload', JSON.stringify({
+  slug: '<skill-name>',
+  displayName: '<displayName>',
+  version: '1.2.0',
+  changelog: 'description of changes',
+  acceptLicenseTerms: true,
+  tags: ['latest']
+}));
+for (const f of files) form.append('files', new Blob([f.bytes], {type: 'text/plain'}), f.relPath);
+
+fetch('https://clawhub.ai/api/v1/skills', {
+  method: 'POST',
+  headers: { 'Authorization': 'Bearer ' + TOKEN, 'Accept': 'application/json' },
+  body: form
+}).then(async r => {
+  const data = await r.json();
+  console.log(r.ok ? 'OK ' + data.versionId : JSON.stringify(data));
+});
+"
 ```
 
 **ClawHub 发版要求**:
