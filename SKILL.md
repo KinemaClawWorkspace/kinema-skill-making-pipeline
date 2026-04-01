@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.3.1
+version: 1.4.0
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -181,9 +181,25 @@ Must include: | 包含：
 - displayName: human-readable name with feature description | 人类可读名称（含功能描述）
 - version: semantic version number | 语义化版本号
 - description: functionality description and trigger condition | 功能描述和触发条件
-- Author link: \`[YourName](https://github.com/yourname)\`
-- Organization link: \`[YourOrg](https://github.com/yourorg)\`
 - Complete usage instructions | 完整使用说明
+
+**作者声明规范**:
+
+SKILL.md 正文开头（标题之后）必须声明作者信息：
+
+```markdown
+# Skill Name
+
+- **Author**: [AuthorName](https://github.com/authorname)
+- **Organization**: [OrgName](https://github.com/orgname)
+- **GitHub**: https://github.com/orgname/skill-name
+```
+
+| 字段 | 说明 |
+|------|------|
+| Author | 作者 GitHub 个人主页链接 |
+| Organization | 所属组织 GitHub 主页链接 |
+| GitHub | Skill 源码仓库链接 |
 
 **displayName 格式规范**:
 - 统一格式: \`Name (Feature Description)\`
