@@ -15,6 +15,14 @@ description: |
 
 本规范定义了 KinemaClaw ecosystem 中 skill 的开发、版本管理、发布的标准化流程。
 
+## ⚠️ Before First Use | 首次使用必读
+
+**首次使用此 skill 前，必须先读取 [ONBOARDING.md](ONBOARDING.md) 完成环境配置。**
+
+- **首次配置** → 读取 ONBOARDING.md 完成全部步骤
+- **环境不可用**（命令不存在、依赖缺失、连接失败）→ 读取 ONBOARDING.md Troubleshooting 排查修复
+- **配置完成后** → 直接使用下方开发流程
+
 ## Core Principles | 核心原则
 
 1. **Git First** - All modifications must be managed in Git repository | 所有修改必须在 Git 仓库中管理
