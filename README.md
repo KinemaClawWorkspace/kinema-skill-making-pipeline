@@ -40,6 +40,7 @@ openclaw skills install kinema-skill-making-pipeline
 | No In-Place Publishing | 禁止直接从 /app/skills/ 发布 |
 | Onboarding Required | 每个 Skill 必须有安装/配置引导 |
 | Four-Way Sync | 发版后同步四地版本 |
+| Marketplace on First Publish | 全新 Skill 首发时登记 marketplace 索引；版本更新不需要 |
 
 ## 适用场景
 
@@ -62,7 +63,12 @@ clawhub publish . --slug <name> --name "<displayName>" --version 1.2.0 --changel
 
 # 4. 同步本地 skills
 clawhub update <skill-name>
+
+# 5. （仅全新 skill 首发）更新 marketplace 索引
+#    详见 references/marketplace-publishing.md
 ```
+
+> **版本更新不需要动 marketplace 索引**，仅在从 0 发布新 skill 时登记。
 
 ## Skill 目录结构
 

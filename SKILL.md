@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.5.1
+version: 1.6.0
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -31,6 +31,7 @@ description: |
 4. **No In-Place Publishing** - Never publish raw skills from /app/skills/ | 禁止发布 /app/skills/ 中的原位 skill
 5. **Onboarding Required** - Every skill must have installation/configuration guide | 每个 skill 必须有安装/配置引导
 6. **Four-Way Sync** - After release, sync versions across: projects repo, local skills, GitHub Release, ClawHub | 发版后同步四地版本：projects 仓库、本地 skills、GitHub Release、ClawHub
+7. **Marketplace on First Publish** - A brand-new skill must be registered in the marketplace index; version updates must NOT | 全新 skill 首发时必须登记 marketplace 索引；版本更新则不需要
 
 ## Development Workflow | 开发流程
 
@@ -61,6 +62,15 @@ git commit -m "fix stuff"
 
 ### 3. Release Process | 发布流程
 
+**发布前先判断类型 | Determine release type first:**
+
+| 类型 | 额外动作 |
+|------|---------|
+| **全新 skill 首发**（marketplace 索引中尚无该 skill） | 走下方常规流程 **+** 更新 marketplace 索引 → 读取 [references/marketplace-publishing.md](references/marketplace-publishing.md) |
+| **已有 skill 版本更新** | 仅走下方常规流程，**不动** marketplace 索引 |
+
+> 判断方法：在 marketplace 的 `.claude-plugin/marketplace.json` `plugins` 数组中检索本 skill 的 `name`。不存在 = 首发，存在 = 版本更新。
+
 ```bash
 cd projects/<skill-name>
 
@@ -78,53 +88,12 @@ git push origin v1.2.0
 
 # 5. Publish to ClawHub | 推送到 ClawHub
 clawhub publish . --slug <skill-name> --name "<displayName>" --version 1.2.0 --changelog "description of changes"
+
+# 6. (仅全新 skill 首发) 更新 marketplace 索引 | (new skill only) update marketplace index
+#    → 读取 references/marketplace-publishing.md
 ```
 
-> **Fallback**: 如果 `clawhub publish` 返回 502 错误，可通过 Node.js 直接调用 ClawHub API 发布。详见附录。
-
-
-```bash
-node -e "
-const fs = require('fs');
-const path = require('path');
-const TOKEN = JSON.parse(fs.readFileSync(process.env.HOME + '/.config/clawhub/config.json','utf8')).token;
-
-const folder = '/path/to/<skill-name>';
-const files = [];
-function walk(dir, prefix='') {
-  for (const f of fs.readdirSync(dir, {withFileTypes: true})) {
-    const full = path.join(dir, f.name);
-    const rel = prefix ? prefix + '/' + f.name : f.name;
-    if (f.name === '.git' || f.name === 'node_modules') continue;
-    if (f.isDirectory()) walk(full, rel);
-    else if (rel.split('.').pop().match(/^(md|json|yaml|yml|js|ts|py|sh|txt|toml|css|html|svg|xml|csv|env|ini|cfg)$/)) {
-      files.push({ relPath: rel, bytes: fs.readFileSync(full) });
-    }
-  }
-}
-walk(folder);
-
-const form = new FormData();
-form.set('payload', JSON.stringify({
-  slug: '<skill-name>',
-  displayName: '<displayName>',
-  version: '1.2.0',
-  changelog: 'description of changes',
-  acceptLicenseTerms: true,
-  tags: ['latest']
-}));
-for (const f of files) form.append('files', new Blob([f.bytes], {type: 'text/plain'}), f.relPath);
-
-fetch('https://clawhub.ai/api/v1/skills', {
-  method: 'POST',
-  headers: { 'Authorization': 'Bearer ' + TOKEN, 'Accept': 'application/json' },
-  body: form
-}).then(async r => {
-  const data = await r.json();
-  console.log(r.ok ? 'OK ' + data.versionId : JSON.stringify(data));
-});
-"
-```
+> **Fallback**: 如果 `clawhub publish` 返回 502 错误，可通过 Node.js 直接调用 ClawHub API 发布。详见 [references/clawhub-api-fallback.md](references/clawhub-api-fallback.md)。
 
 **ClawHub 发版要求**:
 - `--name` 必须使用 SKILL.md 中的 `displayName` 值
@@ -163,6 +132,7 @@ cp -r projects/<skill-name>/scripts skills/<skill-name>/scripts/
 - [ ] 5. 发布到 ClawHub (`clawhub publish` 或 API fallback)
 - [ ] 6. 更新本地 skills (`clawhub update <skill-name>` 或手动同步)
 - [ ] 7. 验证四地版本一致
+- [ ] 8. **（仅全新 skill 首发）** 更新 marketplace 索引 → 见 [references/marketplace-publishing.md](references/marketplace-publishing.md)；版本更新跳过此步
 
 ### Version Numbering | 版本号规则
 
@@ -333,7 +303,7 @@ Skills must NOT contain: | skill 中**禁止**包含：
 ├── LICENSE                       # Recommended: license | 推荐
 ├── scripts/                      # Optional: scripts | 可选
 │   └── setup.reference.sh        # Optional: setup reference | 可选（见 Onboarding 章节）
-└── references/                   # Optional: reference materials | 可选
+└── references/                   # Optional: reference materials | 可选（低频/详细内容外置）
 ```
 
 ## Automation Script Example | 自动化脚本示例
@@ -374,49 +344,7 @@ clawhub publish . --slug $SKILL_NAME --version $VERSION
 - [ClawHub Documentation](https://docs.openclaw.ai) | [ClawHub 文档](https://docs.openclaw.ai)
 - [Skill Creator Specification](/app/skills/skill-creator/SKILL.md) | [Skill 创建规范](/app/skills/skill-creator/SKILL.md)
 
-## Appendix: ClawHub API Fallback | 附录: ClawHub API 备用发布
+## References | 参考资料
 
-> 当 `clawhub publish` 返回 502 错误时，可通过 Node.js 直接调用 ClawHub API 发布。
-
-```bash
-node -e "
-const fs = require('fs');
-const path = require('path');
-const TOKEN = JSON.parse(fs.readFileSync(process.env.HOME + '/.config/clawhub/config.json','utf8')).token;
-
-const folder = '/path/to/<skill-name>';
-const files = [];
-function walk(dir, prefix='') {
-  for (const f of fs.readdirSync(dir, {withFileTypes: true})) {
-    const full = path.join(dir, f.name);
-    const rel = prefix ? prefix + '/' + f.name : f.name;
-    if (f.name === '.git' || f.name === 'node_modules') continue;
-    if (f.isDirectory()) walk(full, rel);
-    else if (rel.split('.').pop().match(/^(md|json|yaml|yml|js|ts|py|sh|txt|toml|css|html|svg|xml|csv|env|ini|cfg)$/)) {
-      files.push({ relPath: rel, bytes: fs.readFileSync(full) });
-    }
-  }
-}
-walk(folder);
-
-const form = new FormData();
-form.set('payload', JSON.stringify({
-  slug: '<skill-name>',
-  displayName: '<displayName>',
-  version: '1.2.0',
-  changelog: 'description of changes',
-  acceptLicenseTerms: true,
-  tags: ['latest']
-}));
-for (const f of files) form.append('files', new Blob([f.bytes], {type: 'text/plain'}), f.relPath);
-
-fetch('https://clawhub.ai/api/v1/skills', {
-  method: 'POST',
-  headers: { 'Authorization': 'Bearer ' + TOKEN, 'Accept': 'application/json' },
-  body: form
-}).then(async r => {
-  const data = await r.json();
-  console.log(r.ok ? 'OK ' + data.versionId : JSON.stringify(data));
-});
-"
-```
+- [references/marketplace-publishing.md](references/marketplace-publishing.md) — 全新 skill 首发时更新 marketplace 索引的完整步骤
+- [references/clawhub-api-fallback.md](references/clawhub-api-fallback.md) — `clawhub publish` 返回 502 时的 API 备用发布脚本
