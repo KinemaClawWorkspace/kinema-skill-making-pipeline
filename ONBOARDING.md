@@ -70,6 +70,8 @@ gh auth login
 
 按提示选择：GitHub.com → HTTPS → 浏览器认证。
 
+> **注意**：若 Agent 无法自动打开浏览器，将输出的授权链接提供给用户，由用户手动在浏览器中访问完成授权。
+
 ### 验证
 
 ```bash
@@ -103,6 +105,8 @@ clawhub login
 ```
 
 按提示完成浏览器授权。
+
+> **注意**：若 Agent 无法自动打开浏览器，将 `clawhub login` 输出的 `https://clawhub.ai/cli/auth?...` 链接提供给用户，由用户手动在浏览器中访问完成授权。
 
 ### 验证
 
