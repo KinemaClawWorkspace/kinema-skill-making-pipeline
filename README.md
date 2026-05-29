@@ -2,6 +2,34 @@
 
 KinemaClaw 生态中 Skill 的开发、版本管理和发布的标准化流程。所有在 KinemaClaw 下开发的 Skill 必须遵循此规范。
 
+## 安装
+
+### 方法一：通过 Claude Code Marketplace
+
+1. 添加 Marketplace：
+
+```
+/plugin marketplace add https://github.com/KinemaClawWorkspace/kinema-skills-marketplace
+```
+
+2. 安装 Skill：
+
+```
+/plugin install kinema-skill-making-pipeline@kinema-skills-marketplace
+```
+
+3. 查看已安装的 Skill：
+
+```
+/plugin list
+```
+
+### 方法二：通过 ClawHub OpenClaw
+
+```bash
+openclaw skills install kinema-skill-making-pipeline
+```
+
 ## 核心原则
 
 | 原则 | 说明 |
