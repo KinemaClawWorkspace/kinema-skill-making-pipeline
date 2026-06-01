@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.8.1
+version: 1.8.2
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -30,7 +30,7 @@ description: |
 3. **Versioned Releases** - Must create Git tag before publishing | 发布前必须打 Git tag
 4. **No In-Place Publishing** - Never publish raw skills from /app/skills/ | 禁止发布 /app/skills/ 中的原位 skill
 5. **Onboarding Required** - Every skill must have installation/configuration guide | 每个 skill 必须有安装/配置引导
-6. **Four-Way Sync** - After release, sync versions across: projects repo, local skills, GitHub Release, ClawHub | 发版后同步四地版本：projects 仓库、本地 skills、GitHub Release、ClawHub
+6. **Five-Way Sync** - After release, sync versions across: projects repo, ClawHub cache, GitHub Release, ClawHub, Claude Code Marketplace | 发版后同步五地版本：projects 仓库、ClawHub 缓存、GitHub Release、ClawHub、Claude Code Marketplace
 7. **Marketplace on First Publish** - A brand-new skill must be registered in the marketplace index; version updates must NOT | 全新 skill 首发时必须登记 marketplace 索引；版本更新则不需要
 
 ## Development Workflow | 开发流程
@@ -110,26 +110,57 @@ rm -rf "$TMPDIR"
 - `--changelog` 必须包含本次变更说明
 - 发布前确保 GitHub Release 已创建
 
-### 4. Four-Way Version Sync | 四地版本同步
+### 4. Five-Way Version Sync | 五地版本同步
 
-完成发版后，必须确保以下四个位置的版本一致：
+完成发版后，必须确保以下五个位置的版本一致：
 
 | Location | Path/URL | Action |
 |----------|----------|--------|
 | **projects 仓库** | `~/.openclaw/workspace/projects/<skill-name>/` | Git tag + SKILL.md version |
-| **本地 skills** | `~/.openclaw/workspace/skills/<skill-name>/` | `clawhub update` 或手动同步 |
+| **ClawHub 缓存** | `~/.openclaw/workspace/skills/<skill-name>/` | `clawhub update` 或手动同步 |
 | **GitHub Release** | `https://github.com/<org>/<repo>/releases` | `gh release create` |
 | **ClawHub** | `https://clawhub.ai` | `clawhub publish` |
+| **Claude Code Marketplace** | 用户本地 Claude Code 插件目录 | 用户执行 `claude plugin update` |
 
-**发版后自动同步本地 skills**:
+**发版后同步命令**:
 
 ```bash
-# 发版完成后，更新本地安装的 skill
+# 发版完成后，更新 ClawHub 本地缓存
 clawhub update <skill-name>
 
-# 或手动同步
+# 用户更新 Claude Code 插件（通过 marketplace 安装的用户执行）
+claude plugin update <skill-name>@<marketplace-name>
+
+# 或更新整个 marketplace 的所有插件
+claude plugin marketplace update <marketplace-name>
+
+# 手动同步 ClawHub 缓存（备用）
 cp projects/<skill-name>/SKILL.md skills/<skill-name>/SKILL.md
 cp -r projects/<skill-name>/scripts skills/<skill-name>/scripts/
+```
+
+#### Claude Code 插件管理命令
+
+Claude Code 提供以下插件管理命令（非 ClawHub CLI）：
+
+| 命令 | 说明 |
+|------|------|
+| `claude plugin install <github-url>` | 从 GitHub URL 直接安装插件 |
+| `claude plugin install <name>@<marketplace>` | 从 marketplace 安装插件 |
+| `claude plugin update <name>@<marketplace>` | 更新单个插件到最新版本 |
+| `claude plugin marketplace update <marketplace>` | 更新 marketplace 索引及所有插件 |
+| `claude plugin list` | 列出已安装插件 |
+| `claude plugin remove <name>` | 移除插件 |
+
+**marketplace-name 示例**：
+- 官方 marketplace: `anthropic`（如 `claude plugin update my-skill@anthropic`）
+- 私有 marketplace: 组织或个人配置的 marketplace 名称
+
+**发版后通知用户**：
+发版完成后，应在 Release Notes 或通知渠道提示用户执行更新命令：
+```
+已发布 v1.2.0，请通过 Claude Code 更新：
+claude plugin update kinema-skill-making-pipeline@kinemaclaw
 ```
 
 **完整发版检查清单**:
@@ -139,9 +170,10 @@ cp -r projects/<skill-name>/scripts skills/<skill-name>/scripts/
 - [ ] 3. Push 到 GitHub (`git push origin master --tags`)
 - [ ] 4. 创建 GitHub Release (`gh release create vX.Y.Z`)
 - [ ] 5. 发布到 ClawHub (`clawhub publish` 或 API fallback)
-- [ ] 6. 更新本地 skills (`clawhub update <skill-name>` 或手动同步)
-- [ ] 7. 验证四地版本一致
+- [ ] 6. 更新 ClawHub 缓存 (`clawhub update <skill-name>` 或手动同步)
+- [ ] 7. 验证五地版本一致
 - [ ] 8. **（仅全新 skill 首发）** 更新 marketplace 索引 → 见 [references/marketplace-publishing.md](references/marketplace-publishing.md)；版本更新跳过此步
+- [ ] 9. 通知用户更新 Claude Code 插件（Release Notes 中提示 `claude plugin update`）
 
 ### Version Numbering | 版本号规则
 

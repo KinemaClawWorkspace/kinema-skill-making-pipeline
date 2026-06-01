@@ -12,7 +12,7 @@
 
 判断方法：在 marketplace 索引的 `plugins` 数组中检索目标 skill 的 `name`。
 - **不存在** → 新 skill 首发，执行本文档。
-- **已存在** → 版本更新，跳过本文档，按 SKILL.md 的 Four-Way Sync 走即可。
+- **已存在** → 版本更新，跳过本文档，按 SKILL.md 的 Five-Way Sync 走即可。
 
 ## Step 1: 定位 Marketplace 仓库 | Locate the Marketplace Repo
 

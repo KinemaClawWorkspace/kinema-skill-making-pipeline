@@ -39,7 +39,7 @@ openclaw skills install kinema-skill-making-pipeline
 | Versioned Releases | 发布前必须打 Git tag |
 | No In-Place Publishing | 禁止直接从 /app/skills/ 发布 |
 | Onboarding Required | 每个 Skill 必须有安装/配置引导 |
-| Four-Way Sync | 发版后同步四地版本 |
+| Five-Way Sync | 发版后同步五地版本 |
 | Marketplace on First Publish | 全新 Skill 首发时登记 marketplace 索引；版本更新不需要 |
 
 ## 适用场景
