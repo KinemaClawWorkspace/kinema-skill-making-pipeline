@@ -75,11 +75,11 @@ clawhub update <skill-name>
 ```
 <skill-name>/
 ├── SKILL.md              # 必需: Skill 定义
-├── ONBOARDING.md         # 必需: 安装配置引导
 ├── README.md             # 推荐: 仓库说明
 ├── LICENSE               # 推荐: 开源协议
 ├── scripts/              # 可选: 自动化脚本
-└── references/           # 可选: 参考资料
+└── references/           # 必需: 参考资料与引导文档
+    └── ONBOARDING.md     # 必需: 安装配置引导
 ```
 
 ## 作者

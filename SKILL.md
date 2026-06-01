@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.6.0
+version: 1.6.1
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -17,10 +17,10 @@ description: |
 
 ## ⚠️ Before First Use | 首次使用必读
 
-**首次使用此 skill 前，必须先读取 [ONBOARDING.md](ONBOARDING.md) 完成环境配置。**
+**首次使用此 skill 前，必须先读取 [references/ONBOARDING.md](references/ONBOARDING.md) 完成环境配置。**
 
-- **首次配置** → 读取 ONBOARDING.md 完成全部步骤
-- **环境不可用**（命令不存在、依赖缺失、连接失败）→ 读取 ONBOARDING.md Troubleshooting 排查修复
+- **首次配置** → 读取 references/ONBOARDING.md 完成全部步骤
+- **环境不可用**（命令不存在、依赖缺失、连接失败）→ 读取 references/ONBOARDING.md Troubleshooting 排查修复
 - **配置完成后** → 直接使用下方开发流程
 
 ## Core Principles | 核心原则
@@ -41,7 +41,8 @@ description: |
 projects/<skill-name>/
 ├── SKILL.md              # Required: skill definition
 ├── scripts/              # Optional: automation scripts
-├── references/           # Optional: reference materials
+├── references/           # Required: references and onboarding
+│   └── ONBOARDING.md     # Required: onboarding guide
 └── other project files
 ```
 
@@ -184,7 +185,7 @@ SKILL.md 正文开头（标题之后）必须声明作者信息：
 
 ### 2. Onboarding | Onboarding
 
-**ONBOARDING.md 是必选文件。** SKILL.md 不包含安装/配置细节，仅引用 ONBOARDING.md。
+**references/ONBOARDING.md 是必选文件。** SKILL.md 不包含安装/配置细节，仅引用 references/ONBOARDING.md。
 
 #### 2.1 SKILL.md 中的 Onboarding 引导
 
@@ -193,18 +194,18 @@ SKILL.md 文件开头（`#` 标题之后、Environment Variables 之前）必须
 ```markdown
 ## ⚠️ Before First Use | 首次使用必读
 
-**首次使用此 skill 前，必须先读取 [ONBOARDING.md](ONBOARDING.md) 完成环境配置。**
+**首次使用此 skill 前，必须先读取 [references/ONBOARDING.md](references/ONBOARDING.md) 完成环境配置。**
 
-- **首次配置** → 读取 ONBOARDING.md 完成全部步骤
-- **环境不可用**（命令不存在、依赖缺失、连接失败）→ 读取 ONBOARDING.md Troubleshooting 排查修复
+- **首次配置** → 读取 references/ONBOARDING.md 完成全部步骤
+- **环境不可用**（命令不存在、依赖缺失、连接失败）→ 读取 references/ONBOARDING.md Troubleshooting 排查修复
 - **配置完成后** → 直接使用下方 Run Commands
 ```
 
-Agent 读取 SKILL.md 时会看到此块，根据场景决定是否继续读取 ONBOARDING.md。
+Agent 读取 SKILL.md 时会看到此块，根据场景决定是否继续读取 references/ONBOARDING.md。
 
-#### 2.2 ONBOARDING.md 结构规范
+#### 2.2 references/ONBOARDING.md 结构规范
 
-ONBOARDING.md 是给 AI Agent 执行的引导文档，必须按以下结构编写：
+references/ONBOARDING.md 是给 AI Agent 执行的引导文档，必须按以下结构编写：
 
 ```markdown
 # <Skill Name> Onboarding
@@ -274,10 +275,10 @@ tool --help
 
 | 场景 | Agent 行为 |
 |------|-----------|
-| **首次使用** | 读取 ONBOARDING.md，按 Step 1-N 顺序执行 |
-| **环境不可用** | 读取 ONBOARDING.md Troubleshooting，按错误信息匹配解决方案 |
+| **首次使用** | 读取 references/ONBOARDING.md，按 Step 1-N 顺序执行 |
+| **环境不可用** | 读取 references/ONBOARDING.md Troubleshooting，按错误信息匹配解决方案 |
 | **依赖缺失** | 跳转到对应 Step 重新执行安装 |
-| **版本升级后** | 重新执行 ONBOARDING 全流程（新版本可能引入新依赖） |
+| **版本升级后** | 重新执行 references/ONBOARDING.md 全流程（新版本可能引入新依赖） |
 
 ### 3. Prohibited Content | 禁止内容
 
@@ -298,12 +299,12 @@ Skills must NOT contain: | skill 中**禁止**包含：
 ```
 <skill-name>/                     # Git repository | Git 仓库
 ├── SKILL.md                      # Required: skill definition | 必需
-├── ONBOARDING.md                 # Required: onboarding guide | 必需（见 Onboarding 章节）
 ├── README.md                     # Recommended: project readme | 推荐
 ├── LICENSE                       # Recommended: license | 推荐
 ├── scripts/                      # Optional: scripts | 可选
 │   └── setup.reference.sh        # Optional: setup reference | 可选（见 Onboarding 章节）
-└── references/                   # Optional: reference materials | 可选（低频/详细内容外置）
+└── references/                   # Required: references and onboarding | 必需（低频/详细内容外置）
+    └── ONBOARDING.md             # Required: onboarding guide | 必需（见 Onboarding 章节）
 ```
 
 ## Automation Script Example | 自动化脚本示例
