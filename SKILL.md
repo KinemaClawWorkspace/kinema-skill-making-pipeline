@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.8.0
+version: 1.8.1
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -89,14 +89,20 @@ git push origin v1.2.0
 # 4. Create release on GitHub | 在 GitHub 仓库发布
 # Settings → Releases → Create new release
 
-# 5. Publish to ClawHub | 推送到 ClawHub
-clawhub publish . --slug <skill-name> --name "<displayName>" --version 1.2.0 --changelog "description of changes"
+# 5. Publish to ClawHub | 推送到 ClawHub（临时文件夹模式）
+#    .claude-plugin/ 会导致 ClawHub 误判为 plugin，需先排除
+TMPDIR=$(mktemp -d /tmp/clawhub-publish-XXXXXX)
+rsync -a --exclude='.git' --exclude='.claude-plugin' --exclude='.claude' --exclude='.clawhub' --exclude='skills' . "$TMPDIR/"
+clawhub publish "$TMPDIR" --slug <skill-name> --name "<displayName>" --version 1.2.0 --changelog "description of changes"
+rm -rf "$TMPDIR"
 
 # 6. (仅全新 skill 首发) 更新 marketplace 索引 | (new skill only) update marketplace index
 #    → 读取 references/marketplace-publishing.md
 ```
 
 > **Fallback**: 如果 `clawhub publish` 返回 502 错误，可通过 Node.js 直接调用 ClawHub API 发布。详见 [references/clawhub-api-fallback.md](references/clawhub-api-fallback.md)。
+
+> **ClawHub 与 `.claude-plugin/` 的兼容性说明**：ClawHub CLI 检测到 `.claude-plugin/` 会将项目识别为 plugin 而非 skill。因此发版时必须使用临时文件夹模式，排除 `.claude-plugin/` 目录。**不要**使用 `clawhub package publish`，它需要 `openclaw.plugin.json` 文件。
 
 **ClawHub 发版要求**:
 - `--name` 必须使用 SKILL.md 中的 `displayName` 值
@@ -378,9 +384,10 @@ Skills must NOT contain: | skill 中**禁止**包含：
 
 SKILL_NAME=$1
 VERSION=$2
+CHANGELOG=${3:-"Release v$VERSION"}
 
 if [ -z "$SKILL_NAME" ] || [ -z "$VERSION" ]; then
-    echo "Usage: $0 <skill-name> <version>"
+    echo "Usage: $0 <skill-name> <version> [changelog]"
     exit 1
 fi
 
@@ -399,8 +406,14 @@ git tag -a v$VERSION -m "Release v$VERSION"
 git push origin master
 git push origin v$VERSION
 
-# Publish to ClawHub | 发布到 ClawHub
-clawhub publish . --slug $SKILL_NAME --version $VERSION
+# Publish to ClawHub (temp folder mode) | 发布到 ClawHub（临时文件夹模式）
+# .claude-plugin/ causes ClawHub to misidentify as plugin | .claude-plugin/ 会导致 ClawHub 误判
+TMPDIR=$(mktemp -d /tmp/clawhub-publish-XXXXXX)
+rsync -a --exclude='.git' --exclude='.claude-plugin' --exclude='.claude' --exclude='.clawhub' --exclude='skills' . "$TMPDIR/"
+clawhub publish "$TMPDIR" --slug $SKILL_NAME --version $VERSION --changelog "$CHANGELOG"
+EXIT_CODE=$?
+rm -rf "$TMPDIR"
+exit $EXIT_CODE
 ```
 
 ## Related Documentation | 相关文档
