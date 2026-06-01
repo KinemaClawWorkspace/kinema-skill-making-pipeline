@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.6.1
+version: 1.7.0
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -287,17 +287,20 @@ Skills must NOT contain: | skill 中**禁止**包含：
 - Passwords, accounts, tokens | 密码、账号、Token
 - Personal email, phone | 个人邮箱、电话
 - Real names, identity information | 真实姓名、身份信息
+- Cache files, build artifacts | 缓存文件、构建产物（`.clawhub/`、`node_modules/`、`skills/` 等应通过 `.gitignore` 排除）
 
 ## GitHub Repository Guidelines | GitHub 仓库规范
 
 - Default to **Private** repositories | 默认创建 **Private** 仓库
 - Use meaningful repository names | 使用有意义的仓库名称
 - Keep README.md in sync with SKILL.md | 保持 README.md 与 SKILL.md 一致
+- No cache files in repo | 仓库中禁止缓存文件，`.gitignore` 必须排除 `.clawhub/`、`skills/` 等 CLI 产物
 
 ## Directory Structure | 目录结构
 
 ```
 <skill-name>/                     # Git repository | Git 仓库
+├── .gitignore                    # Required: must exclude CLI cache files | 必需：排除 CLI 缓存
 ├── SKILL.md                      # Required: skill definition | 必需
 ├── README.md                     # Recommended: project readme | 推荐
 ├── LICENSE                       # Recommended: license | 推荐
