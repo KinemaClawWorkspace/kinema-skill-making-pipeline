@@ -1,0 +1,14 @@
+{
+  "name": "kinema-skill-making-pipeline",
+  "displayName": "Kinema's Skill Making Pipeline",
+  "version": "1.8.0",
+  "description": "KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing.",
+  "author": {
+    "name": "LeeShunEE",
+    "url": "https://github.com/LeeShunEE"
+  },
+  "homepage": "https://github.com/KinemaClawWorkspace/kinema-skill-making-pipeline",
+  "repository": "https://github.com/KinemaClawWorkspace/kinema-skill-making-pipeline",
+  "license": "GPL-3.0",
+  "keywords": ["skill", "pipeline", "publishing", "kinema", "specification"]
+}

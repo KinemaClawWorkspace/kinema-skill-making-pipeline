@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.7.0
+version: 1.8.0
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -39,6 +39,8 @@ description: |
 
 ```
 projects/<skill-name>/
+├── .claude-plugin/       # Required: plugin manifest
+│   └── plugin.json       # Required: plugin metadata
 ├── SKILL.md              # Required: skill definition
 ├── scripts/              # Optional: automation scripts
 ├── references/           # Required: references and onboarding
@@ -280,7 +282,61 @@ tool --help
 | **依赖缺失** | 跳转到对应 Step 重新执行安装 |
 | **版本升级后** | 重新执行 references/ONBOARDING.md 全流程（新版本可能引入新依赖） |
 
-### 3. Prohibited Content | 禁止内容
+### 3. Plugin Manifest | 插件清单
+
+**`.claude-plugin/plugin.json` 是 Required 文件。** Claude Code 插件规范要求此文件提供标准化元数据，支持 marketplace 分发和插件发现。
+
+#### 3.1 位置与格式
+
+- 路径：`<skill-name>/.claude-plugin/plugin.json`
+- 格式：JSON
+- **不加入 `.gitignore`**（它是项目源码的一部分，不是缓存）
+
+#### 3.2 必需字段
+
+| 字段 | 说明 |
+|------|------|
+| `name` | 插件标识，kebab-case，必须与 SKILL.md frontmatter `name` 一致 |
+
+#### 3.3 推荐字段
+
+| 字段 | 说明 |
+|------|------|
+| `displayName` | 人类可读名称，建议与 SKILL.md frontmatter `displayName` 一致 |
+| `version` | 语义化版本号，必须与 SKILL.md frontmatter `version` 保持同步 |
+| `description` | 简短功能描述 |
+| `author` | 作者信息，格式：`{ "name": "...", "url": "..." }` |
+| `homepage` | 项目主页 URL |
+| `repository` | 代码仓库 URL |
+| `license` | 开源许可证（如 `GPL-3.0`、`MIT`） |
+| `keywords` | 关键词数组，用于 marketplace 搜索 |
+
+#### 3.4 示例
+
+```json
+{
+  "name": "my-skill-name",
+  "displayName": "My Skill Name",
+  "version": "1.0.0",
+  "description": "Short description of the skill functionality.",
+  "author": {
+    "name": "AuthorName",
+    "url": "https://github.com/authorname"
+  },
+  "homepage": "https://github.com/OrgName/my-skill-name",
+  "repository": "https://github.com/OrgName/my-skill-name",
+  "license": "GPL-3.0",
+  "keywords": ["keyword1", "keyword2"]
+}
+```
+
+#### 3.5 版本同步规则
+
+- `plugin.json` 的 `version` 必须 **始终与** SKILL.md frontmatter `version` 一致
+- 发版时两处同时更新，不可遗漏
+- 参考文档：[Plugins Reference](https://code.claude.com/docs/en/plugins-reference)
+
+### 4. Prohibited Content | 禁止内容
 
 Skills must NOT contain: | skill 中**禁止**包含：
 - Personal websites, domains | 个人网站、域名
@@ -288,6 +344,8 @@ Skills must NOT contain: | skill 中**禁止**包含：
 - Personal email, phone | 个人邮箱、电话
 - Real names, identity information | 真实姓名、身份信息
 - Cache files, build artifacts | 缓存文件、构建产物（`.clawhub/`、`node_modules/`、`skills/` 等应通过 `.gitignore` 排除）
+
+> **注意**：`.claude-plugin/` 目录**不是缓存**，不应被 `.gitignore` 排除。它是项目源码的一部分，必须被 Git 跟踪。
 
 ## GitHub Repository Guidelines | GitHub 仓库规范
 
@@ -300,6 +358,8 @@ Skills must NOT contain: | skill 中**禁止**包含：
 
 ```
 <skill-name>/                     # Git repository | Git 仓库
+├── .claude-plugin/               # Required: plugin manifest | 必需：Claude Code 插件清单
+│   └── plugin.json               # Required: plugin metadata | 必需
 ├── .gitignore                    # Required: must exclude CLI cache files | 必需：排除 CLI 缓存
 ├── SKILL.md                      # Required: skill definition | 必需
 ├── README.md                     # Recommended: project readme | 推荐
