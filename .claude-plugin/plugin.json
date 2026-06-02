@@ -1,7 +1,7 @@
 {
   "name": "kinema-skill-making-pipeline",
   "displayName": "Kinema's Skill Making Pipeline",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing.",
   "author": {
     "name": "LeeShunEE",
