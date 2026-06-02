@@ -280,10 +280,12 @@ EBUSY: resource busy or locked, rm 'cache/.../X.Y.Z'
 
 当前 Claude Code session 正在加载插件文件，OS 文件锁阻止缓存目录的覆盖和删除操作。
 
+> **说明**: `marketplace.json` 不锁定版本号，每个 plugin 只声明 `source: github + repo`。Claude Code 会自动从 GitHub repo 拉取最新 release，因此通常只需在新 session 中重新执行 install 命令即可获取最新版本。
+
 #### 解决方案
 
 1. **首选方案**: 在新 Claude Code session 中执行安装命令
-2. **备选方案**: 手动清理缓存后重装
+2. **备选方案**: 如果首选方案仍失败，手动清理缓存后重装
 
 ```bash
 # 清理缓存
