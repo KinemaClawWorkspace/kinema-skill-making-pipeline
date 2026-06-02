@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.8.3
+version: 1.9.0
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -65,117 +65,31 @@ git commit -m "fix stuff"
 
 ### 3. Release Process | 发布流程
 
+**发版流程已外置到** [references/release-process.md](references/release-process.md)。Agent 发版时必须读取该文档并按 Step 1→9 顺序执行。
+
 **发布前先判断类型 | Determine release type first:**
 
 | 类型 | 额外动作 |
 |------|---------|
-| **全新 skill 首发**（marketplace 索引中尚无该 skill） | 走下方常规流程 **+** 更新 marketplace 索引 → 读取 [references/marketplace-publishing.md](references/marketplace-publishing.md) |
-| **已有 skill 版本更新** | 仅走下方常规流程，**不动** marketplace 索引 |
+| **全新 skill 首发**（marketplace 索引中尚无该 skill） | 走常规流程 **+** 更新 marketplace 索引 → 读取 [references/marketplace-publishing.md](references/marketplace-publishing.md) |
+| **已有 skill 版本更新** | 仅走常规流程，**不动** marketplace 索引 |
 
 > 判断方法：在 marketplace 的 `.claude-plugin/marketplace.json` `plugins` 数组中检索本 skill 的 `name`。不存在 = 首发，存在 = 版本更新。
 
-```bash
-cd projects/<skill-name>
+**发版流程概要**（详细步骤见 reference）：
+1. 确认变更已提交
+2. 同步更新 SKILL.md + plugin.json 版本号
+3. 提交并打 Git tag
+4. Push 到 GitHub
+5. 创建 GitHub Release
+6. 发布到 ClawHub（临时文件夹模式，排除 `.claude-plugin/`）
+7. 更新 ClawHub 本地缓存（仅 `~/.openclaw` 存在时）
+8. 更新 Claude Code 插件（仅 `~/.claude` 存在时）
+9. 全量版本校验
 
-# 1. Ensure all changes are committed | 确保所有修改已 commit
-git status
+> **版本校验工具**: `bash scripts/version-check.sh [expected-version]` — 校验 SKILL.md、plugin.json、git tag 三处版本号一致。
 
-# 2. Create version tag (Semantic Versioning) | 打版本 tag (语义化版本)
-git tag -a v1.2.0 -m "Release v1.2.0: Add onboarding"
-
-# 3. Push tag to GitHub | 推送 tag 到 GitHub
-git push origin v1.2.0
-
-# 4. Create release on GitHub | 在 GitHub 仓库发布
-# Settings → Releases → Create new release
-
-# 5. Publish to ClawHub | 推送到 ClawHub（临时文件夹模式）
-#    .claude-plugin/ 会导致 ClawHub 误判为 plugin，需先排除
-TMPDIR=$(mktemp -d /tmp/clawhub-publish-XXXXXX)
-rsync -a --exclude='.git' --exclude='.claude-plugin' --exclude='.claude' --exclude='.clawhub' --exclude='skills' . "$TMPDIR/"
-clawhub publish "$TMPDIR" --slug <skill-name> --name "<displayName>" --version 1.2.0 --changelog "description of changes"
-rm -rf "$TMPDIR"
-
-# 6. (仅全新 skill 首发) 更新 marketplace 索引 | (new skill only) update marketplace index
-#    → 读取 references/marketplace-publishing.md
-```
-
-> **Fallback**: 如果 `clawhub publish` 返回 502 错误，可通过 Node.js 直接调用 ClawHub API 发布。详见 [references/clawhub-api-fallback.md](references/clawhub-api-fallback.md)。
-
-> **ClawHub 与 `.claude-plugin/` 的兼容性说明**：ClawHub CLI 检测到 `.claude-plugin/` 会将项目识别为 plugin 而非 skill。因此发版时必须使用临时文件夹模式，排除 `.claude-plugin/` 目录。**不要**使用 `clawhub package publish`，它需要 `openclaw.plugin.json` 文件。
-
-**ClawHub 发版要求**:
-- `--name` 必须使用 SKILL.md 中的 `displayName` 值
-- `--version` 必须与 Git tag 版本号一致
-- `--changelog` 必须包含本次变更说明
-- 发布前确保 GitHub Release 已创建
-
-### 4. Five-Way Version Sync | 五地版本同步
-
-完成发版后，必须确保以下五个位置的版本一致：
-
-| Location | Path/URL | Action |
-|----------|----------|--------|
-| **projects 仓库** | `~/.openclaw/workspace/projects/<skill-name>/` | Git tag + SKILL.md version |
-| **ClawHub 缓存** | `~/.openclaw/workspace/skills/<skill-name>/` | `clawhub update` 或手动同步 |
-| **GitHub Release** | `https://github.com/<org>/<repo>/releases` | `gh release create` |
-| **ClawHub** | `https://clawhub.ai` | `clawhub publish` |
-| **Claude Code Marketplace** | 用户本地 Claude Code 插件目录 | 用户执行 `claude plugin update` |
-
-**发版后同步命令**:
-
-```bash
-# 发版完成后，更新 ClawHub 本地缓存
-clawhub update <skill-name>
-
-# 用户更新 Claude Code 插件（通过 marketplace 安装的用户执行）
-claude plugin update <skill-name>@<marketplace-name>
-
-# 或更新整个 marketplace 的所有插件
-claude plugin marketplace update <marketplace-name>
-
-# 手动同步 ClawHub 缓存（备用）
-cp projects/<skill-name>/SKILL.md skills/<skill-name>/SKILL.md
-cp -r projects/<skill-name>/scripts skills/<skill-name>/scripts/
-```
-
-#### Claude Code 插件管理命令
-
-Claude Code 提供以下插件管理命令（非 ClawHub CLI）：
-
-| 命令 | 说明 |
-|------|------|
-| `claude plugin install <github-url>` | 从 GitHub URL 直接安装插件 |
-| `claude plugin install <name>@<marketplace>` | 从 marketplace 安装插件 |
-| `claude plugin update <name>@<marketplace>` | 更新单个插件到最新版本 |
-| `claude plugin marketplace update <marketplace>` | 更新 marketplace 索引及所有插件 |
-| `claude plugin list` | 列出已安装插件 |
-| `claude plugin remove <name>` | 移除插件 |
-
-**marketplace-name 示例**：
-- 官方 marketplace: `anthropic`（如 `claude plugin update my-skill@anthropic`）
-- 私有 marketplace: 组织或个人配置的 marketplace 名称
-
-**发版后通知用户**：
-发版完成后，应在 Release Notes 或通知渠道提示用户执行更新命令：
-```
-已发布 v1.2.0，请通过 Claude Code 更新：
-claude plugin update kinema-skill-making-pipeline@kinemaclaw
-```
-
-**完整发版检查清单**:
-
-- [ ] 1. projects 仓库 SKILL.md 版本号已更新
-- [ ] 2. Git commit 并打 tag (vX.Y.Z)
-- [ ] 3. Push 到 GitHub (`git push origin master --tags`)
-- [ ] 4. 创建 GitHub Release (`gh release create vX.Y.Z`)
-- [ ] 5. 发布到 ClawHub (`clawhub publish` 或 API fallback)
-- [ ] 6. 更新 ClawHub 缓存 (`clawhub update <skill-name>` 或手动同步)
-- [ ] 7. 验证五地版本一致
-- [ ] 8. **（仅全新 skill 首发）** 更新 marketplace 索引 → 见 [references/marketplace-publishing.md](references/marketplace-publishing.md)；版本更新跳过此步
-- [ ] 9. 通知用户更新 Claude Code 插件（Release Notes 中提示 `claude plugin update`）
-
-### Version Numbering | 版本号规则
+### 4. Version Numbering | 版本号规则
 
 Follow Semantic Versioning: | 遵循语义化版本 (Semantic Versioning):
 - **MAJOR**: Incompatible API changes | 不兼容的 API 变更
@@ -403,9 +317,11 @@ Skills must NOT contain: | skill 中**禁止**包含：
 ├── README.md                     # Recommended: project readme | 推荐
 ├── LICENSE                       # Recommended: license | 推荐
 ├── scripts/                      # Optional: scripts | 可选
+│   ├── version-check.sh          # Optional: version consistency checker | 可选：版本一致性校验
 │   └── setup.reference.sh        # Optional: setup reference | 可选（见 Onboarding 章节）
 └── references/                   # Required: references and onboarding | 必需（低频/详细内容外置）
-    └── ONBOARDING.md             # Required: onboarding guide | 必需（见 Onboarding 章节）
+    ├── ONBOARDING.md             # Required: onboarding guide | 必需（见 Onboarding 章节）
+    └── release-process.md        # Recommended: release process guide | 推荐：发版流程文档
 ```
 
 ## Automation Script Example | 自动化脚本示例
@@ -413,6 +329,7 @@ Skills must NOT contain: | skill 中**禁止**包含：
 ```bash
 #!/bin/bash
 # skill-publish.sh - Publish skill to GitHub + ClawHub
+# 完整发版流程见 references/release-process.md
 
 SKILL_NAME=$1
 VERSION=$2
@@ -424,6 +341,13 @@ if [ -z "$SKILL_NAME" ] || [ -z "$VERSION" ]; then
 fi
 
 cd projects/$SKILL_NAME
+
+# Version consistency check | 版本一致性校验
+bash scripts/version-check.sh "$VERSION"
+if [ $? -ne 0 ]; then
+    echo "Error: Version mismatch. Fix before releasing."
+    exit 1
+fi
 
 # Check for uncommitted changes | 检查是否有未提交的修改
 if ! git diff --quiet; then
@@ -455,5 +379,6 @@ exit $EXIT_CODE
 
 ## References | 参考资料
 
+- [references/release-process.md](references/release-process.md) — 完整发版流程（Step-by-Step，含平台检测、版本校验、缓存问题解决）
 - [references/marketplace-publishing.md](references/marketplace-publishing.md) — 全新 skill 首发时更新 marketplace 索引的完整步骤
 - [references/clawhub-api-fallback.md](references/clawhub-api-fallback.md) — `clawhub publish` 返回 502 时的 API 备用发布脚本
