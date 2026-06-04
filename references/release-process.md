@@ -151,28 +151,57 @@ git ls-remote --tags origin | grep vX.Y.Z
 
 在 GitHub 仓库创建正式 Release。
 
+### Release Notes 结构（强制两个 section）
+
+更新说明必须包含以下两个 section，缺一不可：
+
+| Section | 内容 |
+|---------|------|
+| `## 更新内容` | 每行一条新功能 / bug 修复的简短说明，**行尾附带对应 commit id**，格式 `@<commit-id>`（短 hash 即可） |
+| `## 更新指令` | 用户拉取本次更新需执行的命令（见 Step 8） |
+
+**先取本次区间的 commit 列表**，每条 commit 对应「更新内容」里的一行：
+
+```bash
+# 取上一个 tag 到 HEAD 的提交（用于逐条填写更新内容 + commit id）
+PREV_TAG=$(git tag -l 'v*' --sort=-version:refname | sed -n '2p')
+git log --oneline "${PREV_TAG}..HEAD"
+# 输出形如：
+#   a1b2c3d feat(x): 新增 A 功能
+#   d4e5f6a fix(y): 修复 B 问题
+```
+
 ### 动作
 
 ```bash
 gh release create vX.Y.Z \
   --repo <org>/<repo> \
-  --title "vX.Y.Z" \
-  --notes "## Release vX.Y.Z: <标题>
+  --title "vX.Y.Z: <标题>" \
+  --notes "## 更新内容
 
-### 主要改进
-- ...
+- 新增 A 功能：<一句说明> @a1b2c3d
+- 修复 B 问题：<一句说明> @d4e5f6a
 
-### 影响
-- ...
+## 更新指令
+
+\`\`\`bash
+claude plugin update <skill-name>@<marketplace-name>
+\`\`\`
+更新后请重开 CLI 或执行 \`/reload-plugins\` 使新版本生效。
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ```
+
+> **要点**：
+> - 「更新内容」每行 = 一个新功能或一个 bug 修复 + `@commit-id`，让读者可直接追溯到具体提交。
+> - 一条 commit 对应一行；若多个 commit 服务同一功能，可合并为一行并列出多个 `@id`。
+> - 「更新指令」固定给出 `claude plugin update` 与 reload 提示，与 Step 8 一致。
 
 ### 验证
 
 ```bash
 gh release view vX.Y.Z --repo <org>/<repo>
-# 期望: 显示 Release 详情
+# 期望: 显示 Release 详情，含「更新内容」「更新指令」两个 section
 ```
 
 ---
@@ -251,21 +280,29 @@ clawhub list | grep <skill-name>
 
 **条件**: 仅当 `HAS_CLAUDE_CODE=true`（`~/.claude` 存在）时执行。
 
-### Agent 可执行的命令
+### Agent 直接执行更新（无需要求用户手动更新）
 
-以下命令由 AI Agent 在终端中直接执行：
+插件更新由 AI Agent 在终端中**直接执行**，不要把更新动作丢给用户：
 
 ```bash
-# 更新 marketplace 索引
-claude plugin marketplace update <marketplace-name>
+# 更新单个插件到最新版本（首选，最简单）
+claude plugin update <skill-name>@<marketplace-name>
 
-# 安装/更新插件
+# 若该插件尚未安装，或需要先刷新 marketplace 索引：
+claude plugin marketplace update <marketplace-name>
 claude plugin install <skill-name>@<marketplace-name>
 ```
 
-### 需要用户操作的命令
+`claude plugin update` 成功后通常输出 `updated from X.Y.(Z-1) to X.Y.Z ... Restart to apply changes.`。
 
-**`reload plugins` 必须由用户手动执行**。当前 session 正在加载插件文件，操作系统会锁定文件，导致无法覆盖。
+### 执行完后提醒用户重载
+
+Agent 跑完 `claude plugin update` 后，**主动提醒用户**让新版本生效（当前 session 正在加载插件文件，OS 文件锁导致需要重载）：
+
+> ✅ 已更新 `<skill-name>` 到 vX.Y.Z。请**重开 CLI** 或执行 `/reload-plugins` 使新版本生效。
+
+- `/reload-plugins`（或重开 CLI）这一步**必须由用户操作**——Agent 无法在当前 session 内热重载自身插件文件。
+- Agent 的职责到「执行 update + 给出重载提示」为止，不要等待或假装已重载。
 
 ### 缓存问题与解决方案
 
