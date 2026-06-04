@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.9.1
+version: 1.10.0
 description: |
   KinemaClaw Skill development and publishing specification. Defines the standard process for skill development, version management, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.
@@ -81,10 +81,10 @@ git commit -m "fix stuff"
 2. 同步更新 SKILL.md + plugin.json 版本号
 3. 提交并打 Git tag
 4. Push 到 GitHub
-5. 创建 GitHub Release
+5. 创建 GitHub Release（Release Notes 强制含「更新内容」+「更新指令」两个 section；更新内容每行一条新功能/bug 修复并附 `@commit-id`）
 6. 发布到 ClawHub（临时文件夹模式，排除 `.claude-plugin/`）
 7. 更新 ClawHub 本地缓存（仅 `~/.openclaw` 存在时）
-8. 更新 Claude Code 插件（仅 `~/.claude` 存在时）
+8. 更新 Claude Code 插件（仅 `~/.claude` 存在时）：Agent **直接执行** `claude plugin update`，随后提醒用户重开 CLI 或 `/reload-plugins`
 9. 全量版本校验
 
 > **版本校验工具**: `bash scripts/version-check.sh [expected-version]` — 校验 SKILL.md、plugin.json、git tag 三处版本号一致。
