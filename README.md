@@ -55,7 +55,8 @@ openclaw skills install kinema-skill-making-pipeline
 git tag -a v1.2.0 -m "Release v1.2.0"
 git push origin v1.2.0
 
-# 2. 创建 GitHub Release
+# 2. 创建 GitHub Release（Release Notes 含「更新内容」+「更新指令」两个 section）
+#    更新内容每行 = 一条新功能/bug 修复 + @commit-id
 gh release create v1.2.0
 
 # 3. 发布到 ClawHub
@@ -64,11 +65,15 @@ clawhub publish . --slug <name> --name "<displayName>" --version 1.2.0 --changel
 # 4. 同步本地 skills
 clawhub update <skill-name>
 
-# 5. （仅全新 skill 首发）更新 marketplace 索引
+# 5. 更新 Claude Code 插件（Agent 直接执行，随后提醒用户重开 CLI 或 /reload-plugins）
+claude plugin update <skill-name>@<marketplace-name>
+
+# 6. （仅全新 skill 首发）更新 marketplace 索引
 #    详见 references/marketplace-publishing.md
 ```
 
 > **版本更新不需要动 marketplace 索引**，仅在从 0 发布新 skill 时登记。
+> 完整发版步骤（含 Release Notes 结构、Agent 自动更新与重载提示）见 [references/release-process.md](references/release-process.md)。
 
 ## Skill 目录结构
 
