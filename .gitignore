@@ -1,4 +1,6 @@
 .claude
 .clawhub
-skills/
+skills/*
+!skills/kinema-skill-making-pipeline/
+!skills/kinema-skill-making-pipeline/SKILL.md
 bash.exe.stackdump

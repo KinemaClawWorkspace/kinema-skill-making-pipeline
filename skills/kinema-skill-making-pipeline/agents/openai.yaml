@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kinema Skill Making Pipeline"
+  short_description: "创建、验证并发布 Codex 与 Claude 跨平台 Skill"
+  default_prompt: "Use $kinema-skill-making-pipeline to review and publish this cross-platform skill."

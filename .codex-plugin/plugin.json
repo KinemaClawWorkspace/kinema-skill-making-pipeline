@@ -1,0 +1,39 @@
+{
+  "name": "kinema-skill-making-pipeline",
+  "version": "1.10.0",
+  "description": "KinemaClaw 的跨平台 Skill 开发与发布规范，覆盖 Codex、Claude Code、GitHub 与 ClawHub。",
+  "author": {
+    "name": "LeeShunEE",
+    "url": "https://github.com/LeeShunEE"
+  },
+  "homepage": "https://github.com/KinemaClawWorkspace/kinema-skill-making-pipeline",
+  "repository": "https://github.com/KinemaClawWorkspace/kinema-skill-making-pipeline",
+  "license": "GPL-3.0",
+  "keywords": [
+    "skill",
+    "plugin",
+    "pipeline",
+    "publishing",
+    "codex",
+    "claude"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Kinema Skill Making Pipeline",
+    "shortDescription": "创建、验证和发布跨平台 Kinema Skills。",
+    "longDescription": "规范 KinemaClaw Skill 的仓库结构、Codex 与 Claude 插件清单、版本同步、GitHub Release、ClawHub 发布和 marketplace 登记流程。",
+    "developerName": "KinemaClawWorkspace",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/KinemaClawWorkspace/kinema-skill-making-pipeline",
+    "defaultPrompt": [
+      "按 Kinema 规范创建一个新的跨平台 skill。",
+      "检查这个 skill 是否满足 Codex 和 Claude 插件规范。",
+      "按 Kinema 流程发布这个 skill 的新版本。"
+    ],
+    "brandColor": "#6366F1"
+  }
+}
