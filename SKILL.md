@@ -1,7 +1,7 @@
 ---
 name: kinema-skill-making-pipeline
 displayName: "Kinema's Skill Making Pipeline"
-version: 1.10.0
+version: 1.11.0
 description: |
   KinemaClaw cross-platform Skill development and publishing specification. Defines the standard process for Codex and Claude plugin development, version management, marketplace indexing, and publishing. All skills built in KinemaClaw must follow this specification.
   Trigger: Creating new skills, publishing skills, modifying existing skills.

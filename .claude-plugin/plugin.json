@@ -1,7 +1,7 @@
 {
   "name": "kinema-skill-making-pipeline",
   "displayName": "Kinema's Skill Making Pipeline",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "KinemaClaw cross-platform Skill development and publishing specification for Claude Code, Codex, GitHub, and ClawHub.",
   "author": {
     "name": "LeeShunEE",

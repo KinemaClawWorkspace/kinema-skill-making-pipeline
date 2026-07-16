@@ -1,6 +1,6 @@
 {
   "name": "kinema-skill-making-pipeline",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "KinemaClaw 的跨平台 Skill 开发与发布规范，覆盖 Codex、Claude Code、GitHub 与 ClawHub。",
   "author": {
     "name": "LeeShunEE",
